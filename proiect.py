@@ -5,6 +5,7 @@ from tkinter import *
 player_round = 1
 game_finished = False
 
+first_player_choosen = False
 
 table_model = {}
 
@@ -61,15 +62,32 @@ class gui():
         self.width = width
         self.height = height
         self.label = Label(self.root, text="Joc de table")
-        self.button = Button(self.root, text="Aruncă zarurile", width=30, command=main)
+        self.button = Button(self.root, text="Aruncă zarurile pentru alegerea primului jucător!", width=30, command=self.roll_dice)
+        self.dice_result_label1 = Label(self.root, text="Zarurile nu au fost aruncate încă")
+        self.dice_result_label2 = Label(self.root, text="")
         self.canvas = Canvas(self.root, width=self.width, height=self.height)
 
         self.label.pack()
         self.button.pack()
+        self.dice_result_label1.pack()
+        self.dice_result_label2.pack()
         self.canvas.pack()
         
         self.draw_table()
         self.root.mainloop()
+
+    def roll_dice(self):
+        if first_player_choosen == False:
+            dice1_player1 = math.ceil(6 * random.random())
+            dice2_player1 = math.ceil(6 * random.random())
+
+            dice1_player2 = math.ceil(6 * random.random())
+            dice2_player2 = math.ceil(6 * random.random())
+
+            result_text1 = f"Zarurile aruncate sunt de jucătorul 1 sunt: {dice1_player1} și {dice2_player1}"
+            result_text2 = f"\nZarurile aruncate sunt de jucătorul 2 sunt: {dice1_player2} și {dice2_player2}"
+            self.dice_result_label.config(text=result_text1)
+            self.dice_result_label2.config(text=result_text2)
 
     def draw_table(self):
         self.canvas.create_rectangle(self.offset_x, self.offset_x, self.width-self.offset_x, self.height-self.offset_x, fill="green")
@@ -92,19 +110,30 @@ class gui():
                     y0 = self.offset_x + (piece_diameter + vertical_gap) * j
                     x1 = x0 + piece_diameter
                     y1 = y0 + piece_diameter
-                    self.canvas.create_oval(x0, y0, x1, y1, fill=color)
+                    oval = self.canvas.create_oval(x0, y0, x1, y1, fill=color, tags="piece")
+                    self.canvas.tag_bind(oval, "<Enter>", lambda event, item=oval: self.highlight_piece(item))
+                    self.canvas.tag_bind(oval, "<Leave>", lambda event, item=oval: self.unhighlight_piece(item))
             else:
                 for j in range(table_model[i][1]):
                     x0 = self.offset_x + (piece_diameter + horizontal_gap) * (i - 12)
                     y0 = 110 + 600 - (piece_diameter + vertical_gap) * (j + 1)
                     x1 = x0 + piece_diameter
                     y1 = y0 + piece_diameter
-                    self.canvas.create_oval(x0, y0, x1, y1, fill=color)
+                    oval = self.canvas.create_oval(x0, y0, x1, y1, fill=color, tags="piece")
+                    self.canvas.tag_bind(oval, "<Enter>", lambda event, item=oval: self.highlight_piece(item))
+                    self.canvas.tag_bind(oval, "<Leave>", lambda event, item=oval: self.unhighlight_piece(item))
 
         self.root.update()
+
+    def highlight_piece(self, item):
+        self.canvas.itemconfig(item, outline="yellow", width=3)
+
+    def unhighlight_piece(self, item):
+        self.canvas.itemconfig(item, outline="white", width=0)
     
 def main():
     init_table()
+    
     app_gui = gui(1000, 800)
 
     print("Bine ați venit la table!")

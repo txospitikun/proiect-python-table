@@ -1,6 +1,7 @@
 import pygame
 import random
 
+
 def color_map(col):
     if col == "white":
         return (255, 255, 255)
@@ -416,11 +417,9 @@ class GUI:
         else:
             for d in self.current_dice:
                 if piece_color == "white":
-                    if spoint <= 12:
-                        dest = spoint - d  
+                    dest = spoint - d  
                 else:
-                    if spoint <= 12:
-                        dest = spoint + d  
+                    dest = spoint + d  
                 if 1 <= dest <= 24:
                     if self.can_land_on(dest, piece_color):
                         self.possible_moves.append((spoint, sindex, dest))
